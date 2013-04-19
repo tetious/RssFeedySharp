@@ -1,0 +1,16 @@
+﻿@model UserAccount
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Login</h2>
+
+@using (Html.BeginForm("CreateSession", "Account", FormMethod.Post, new { @class = "form-vertical"}))
+{
+    @Html.AntiForgeryToken()
+
+    <input type="text" name="UserName" placeholder="Username"/>
+    <br/>
+    <input class="btn btn-large btn-primary" type="submit" value="Login"/>
+}

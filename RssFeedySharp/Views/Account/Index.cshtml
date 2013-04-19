@@ -1,0 +1,10 @@
+﻿@model UserAccount
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<h2>Welcome @Model.UserName!</h2>
+
+@Html.ActionLink("Logout", "DeleteSession")
+

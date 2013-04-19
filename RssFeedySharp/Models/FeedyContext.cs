@@ -7,6 +7,7 @@ namespace RssFeedySharp.Models
         public DbSet<Feed> Feeds { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<UserAccount> UserAccounts { get; set; }
 
         public FeedyContext()
             : base("FeedySharp")
