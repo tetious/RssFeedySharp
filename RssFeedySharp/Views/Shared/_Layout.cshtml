@@ -8,7 +8,24 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
     <body>
-        <div class="container">
+        <div class="container-fluid">
+            <div class="navbar navbar-static-top">
+                <div class="navbar-inner">
+                    <div class="container-fluid">
+                        <a class="brand" href="/">FeedySharp!</a>
+                    
+                        <ul class="nav pull-right">
+                            <li>
+                                <!-- TODO make this right -->
+                                <a href="@Url.Action("Index", "Account")" >Login</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
             @RenderBody()
         </div>
 
