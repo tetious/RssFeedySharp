@@ -1,12 +1,19 @@
 ﻿@if(Request.IsAuthenticated) {
-    <span>
-        Hello, <a href="@Url.Action("Manage", "Account")">@User.Identity.Name</a>!
-        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
-            @Html.AntiForgeryToken()
-            <a href="javascript:$('#logoutForm').submit()">Log off</a>
-        }
-   </span>
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            @User.Identity.Name
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a href="@Url.Action("Manage", "Account")">Manage account</a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a href="@Url.Action("LogOff", "Account")">(Log off)</a>
+            </li>
+        </ul>
+    </li>   
 } else {
-    <a href="@Url.Action("Register", "Account")">Register</a>
-    <a href="@Url.Action("Login", "Account")">Login</a>
+    <a href="@Url.Action("Login", "Account")">Register / Login</a>
 }

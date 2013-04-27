@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Security;
-using RssFeedySharp.Models;
+using RssFeedySharp.ViewModels;
 using WebMatrix.WebData;
 
 namespace RssFeedySharp.Controllers
@@ -10,18 +9,12 @@ namespace RssFeedySharp.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        //
-        // GET: /Account/Login
-
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-
-        //
-        // POST: /Account/Login
 
         [HttpPost]
         [AllowAnonymous]
@@ -38,11 +31,6 @@ namespace RssFeedySharp.Controllers
             return View(model);
         }
 
-        //
-        // POST: /Account/LogOff
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
             WebSecurity.Logout();
@@ -50,17 +38,11 @@ namespace RssFeedySharp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //
-        // GET: /Account/Register
-
         [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
-
-        //
-        // POST: /Account/Register
 
         [HttpPost]
         [AllowAnonymous]
@@ -85,32 +67,21 @@ namespace RssFeedySharp.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-
         
-        //
-        // GET: /Account/Manage
-
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : "";
-            //ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
             ViewBag.ReturnUrl = Url.Action("Manage");
             return View();
         }
-
-        //
-        // POST: /Account/Manage
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Manage(LocalPasswordModel model)
         {
-            //bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-            //ViewBag.HasLocalPassword = hasLocalAccount;
             ViewBag.ReturnUrl = Url.Action("Manage");
             if (ModelState.IsValid)
             {
@@ -127,22 +98,15 @@ namespace RssFeedySharp.Controllers
                 }
 
                 if (changePasswordSucceeded)
-                {
                     return RedirectToAction("Manage", new {Message = ManageMessageId.ChangePasswordSuccess});
-                }
                 else
-                {
                     ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-                }
             }
-
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-
-        #region Helpers
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
@@ -158,14 +122,11 @@ namespace RssFeedySharp.Controllers
         public enum ManageMessageId
         {
             ChangePasswordSuccess,
-            SetPasswordSuccess,
-            RemoveLoginSuccess,
+            SetPasswordSuccess
         }
         
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {
-            // See http://go.microsoft.com/fwlink/?LinkID=177550 for
-            // a full list of status codes.
             switch (createStatus)
             {
                 case MembershipCreateStatus.DuplicateUserName:
@@ -189,9 +150,6 @@ namespace RssFeedySharp.Controllers
                 case MembershipCreateStatus.InvalidUserName:
                     return "The user name provided is invalid. Please check the value and try again.";
 
-                case MembershipCreateStatus.ProviderError:
-                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
-
                 case MembershipCreateStatus.UserRejected:
                     return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
 
@@ -199,6 +157,5 @@ namespace RssFeedySharp.Controllers
                     return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
             }
         }
-        #endregion
     }
 }

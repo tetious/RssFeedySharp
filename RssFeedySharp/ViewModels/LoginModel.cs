@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RssFeedySharp.Models
+namespace RssFeedySharp.ViewModels
 {
     public class LoginModel
     {
