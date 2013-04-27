@@ -159,6 +159,10 @@
     <Compile Include="Models\FeedyContext.cs" />
     <Compile Include="Models\IntBasedEntity.cs" />
     <Compile Include="Models\Item.cs" />
+    <Compile Include="ViewModels\LocalPasswordModel.cs" />
+    <Compile Include="ViewModels\LoginModel.cs" />
+    <Compile Include="ViewModels\RegisterExternalLoginModel.cs" />
+    <Compile Include="ViewModels\RegisterModel.cs" />
     <Compile Include="Models\Tag.cs" />
     <Compile Include="Models\UserAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
