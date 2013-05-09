@@ -154,6 +154,10 @@
     <Compile Include="Migrations\201304252202071_ShiftToWebMatrixAuth.Designer.cs">
       <DependentUpon>201304252202071_ShiftToWebMatrixAuth.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201305090032314_FeedUserAndItemUser.cs" />
+    <Compile Include="Migrations\201305090032314_FeedUserAndItemUser.Designer.cs">
+      <DependentUpon>201305090032314_FeedUserAndItemUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Feed.cs" />
     <Compile Include="Models\FeedyContext.cs" />
@@ -282,6 +286,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201304252202071_ShiftToWebMatrixAuth.resx">
       <DependentUpon>201304252202071_ShiftToWebMatrixAuth.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305090032314_FeedUserAndItemUser.resx">
+      <DependentUpon>201305090032314_FeedUserAndItemUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

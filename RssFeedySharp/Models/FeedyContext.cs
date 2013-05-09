@@ -4,9 +4,11 @@ namespace RssFeedySharp.Models
 {
     public class FeedyContext : DbContext
     {
+        public DbSet<UserFeed> UserFeeds { get; set; }
         public DbSet<Feed> Feeds { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Item> Items { get; set; }
+        public DbSet<UserItem> UserItems { get; set; }
         public DbSet<UserAccount> UserAccounts { get; set; }
 
         public FeedyContext()
@@ -15,9 +17,6 @@ namespace RssFeedySharp.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Feed>()
-                        .HasMany(f => f.Tags)
-                        .WithMany();
         }
     }
 }
