@@ -11,8 +11,8 @@ namespace RssFeedySharp.Models
         public DbSet<UserItem> UserItems { get; set; }
         public DbSet<UserAccount> UserAccounts { get; set; }
 
-        public FeedyContext()
-            : base("FeedySharp")
+        public FeedyContext(string databaseName = "FeedySharp")
+            : base(databaseName)
         {}
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
