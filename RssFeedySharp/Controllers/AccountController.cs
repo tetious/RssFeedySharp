@@ -67,7 +67,7 @@ namespace RssFeedySharp.Controllers
             // If we got this far, something failed, redisplay form
             return View(model);
         }
-        
+
         public ActionResult Manage(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
@@ -98,7 +98,7 @@ namespace RssFeedySharp.Controllers
                 }
 
                 if (changePasswordSucceeded)
-                    return RedirectToAction("Manage", new {Message = ManageMessageId.ChangePasswordSuccess});
+                    return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
                 else
                     ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
             }
@@ -124,7 +124,7 @@ namespace RssFeedySharp.Controllers
             ChangePasswordSuccess,
             SetPasswordSuccess
         }
-        
+
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {
             switch (createStatus)
