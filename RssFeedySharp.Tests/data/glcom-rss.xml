@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+  <channel>
+    <title>Greg&#039;s Adventures</title>
+    <atom:link href="http://www.greglincoln.com/feed/" rel="self" type="application/rss+xml" />
+    <link>http://www.greglincoln.com</link>
+    <description>A zombie for your brain.</description>
+    <lastBuildDate>Fri, 10 May 2013 15:51:35 +0000</lastBuildDate>
+    <language>en-US</language>
+    <sy:updatePeriod>hourly</sy:updatePeriod>
+    <sy:updateFrequency>1</sy:updateFrequency>
+    <generator>http://wordpress.org/?v=3.5.1</generator>
+    <item>
+      <title>Loopback success</title>
+      <link>http://www.greglincoln.com/2011/11/24/loopback-success/</link>
+      <comments>http://www.greglincoln.com/2011/11/24/loopback-success/#comments</comments>
+      <pubDate>Thu, 24 Nov 2011 13:52:33 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Admin Geekery]]></category>
+      <category><![CDATA[geekery]]></category>
+      <category><![CDATA[Linux]]></category>
+      <category><![CDATA[Minecraft]]></category>
+      <category><![CDATA[Modloader]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/?p=145</guid>
+      <description><![CDATA[I had one of those geekpride moments last night when trying to deal with a problem I was having with a Minecraft server running ModLoader. Modding Minecraft is not as easy as it could be, but since it is written in Java, it is not as hard as it could be either. A number of [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>I had one of those geekpride moments last night when trying to deal with a problem I was having with a Minecraft server running ModLoader. Modding Minecraft is not as easy as it could be, but since it is written in Java, it is not as hard as it could be either. A number of clever folks have built compatibility layers and wrappers to improve mod maintainability and compatibility. ModLoader is one of these wrappers widgets.</p>
+<p>Its developer recently (well, somewhat recently anyway) added a feature that would merge zipped jar like class collections from a mods subdirectory into the classpath, preventing the need to edit minecraft_server.jar for each and every mod as you had to do in the past. It loads these in &#8220;random&#8221; order, which turns out to be alphabetical on some platforms, and in less easily manipulated order on others. Linux falls into the latter category, naturally.</p>
+<p>When I looked to fix this, my first thought was to change ModLoader&#8217;s behavior so that it always loaded in alphabetical order. This would be trivial to do if I had the source for ModLoader, but less so without it. I don&#8217;t have much experience with Java decompilers and just didn&#8217;t feel like messing with that.</p>
+<p>Instead, I implemented a fun easy hack that anyone running Linux can do. I created a small vfat loopback filesystem for the mods subfolder. This produced the expected alphabetical loading order and took a minute or two to set up. Here&#8217;s how you do it:</p>
+<p>First, create a zeroed out virtual &#8220;disk&#8221; file to mount, using dd.</p>
+<pre>dd if=/dev/zero of=diskimage.100mb bs=1048576 count=100</pre>
+<p>dd stands for data description, but you don&#8217;t really need to know that. It looks more complicated than it is. The if and of parameters are &#8220;in file&#8221; and &#8220;out file.&#8221; Since we want a file filled with zeroes, we use /dev/zero (a convenience &#8221;device&#8221; that returns zero) as the &#8220;in file.&#8221; Next, we have bs, for which the snarky among you will instantly have a definition in mind. However! It is actually &#8220;block size,&#8221; and determines the size of each copy block, or step in bytes. As I wanted a file that was roughly 100MB, I used the size of a megabyte here. Lastly, we have count, which simply determines the number of &#8220;bs&#8221; blocks to write. (Yes, yes, BS blocks)</p>
+<p>Now! We have a nice empty file to use. Let&#8217;s format it. This is super easy.</p>
+<pre>mkfs.vfat diskimage.100mb</pre>
+<p>We use vfat because it is fast, simple, and Windowsy. Also, it worked.</p>
+<p>Last step! We need to mount it. In Linux, there are no pesky drive letters. One can mount a filesystem anywhere. Everything lives as a child of root, which is simply /. So let us assume our Minecraft server lives in /home/minecraft. The mods folder needs to be /home/minecraft/mods. So create the empty folder first. (Move your existing mods folder out of the way if needed.)</p>
+<pre>mv mods mods-old (if needed)
+
+mkdir mods</pre>
+<p>And the mount: (You need to be able to run things as sudo/root to do this. Discussions about sudo are outside of the scope of this article.)</p>
+<pre>sudo mount diskimage.100mb /home/minecraft/mods -t vfat -o loop,owner,group,umask=000</pre>
+<p>The gist of this is probably obvious. The flags tell mount the type of the filesystem and to map all the files as 777 (readable and writeable by all) since vfat does not support these things natively. It&#8217;s fine for our needs, though not secure enough for some other situations, such as a folder accessible via the web, so make sure you understand the implications of this before you use it elsewhere.</p>
+<p>Now, you are set! You can copy your mod zip files and rename them so that they are in the order you&#8217;d like and it will Just Work(TM). Hooray!</p>
+<p>One last thing. If you want this to mount automatically, you will need to edit /etc/fstab, adding this: (all on one line)</p>
+<pre>/home/minecraft/diskimage.100mb /home/minecraft/mods vfat loop,owner,group,umask=000 0 0</pre>
+<p>I&#8217;ll leave the details of this to you to read about. Have fun!</p>
+<p>&nbsp;</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2011/11/24/loopback-success/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Android is Insecure By Design</title>
+      <link>http://www.greglincoln.com/2011/07/22/android-is-insecure-by-design/</link>
+      <comments>http://www.greglincoln.com/2011/07/22/android-is-insecure-by-design/#comments</comments>
+      <pubDate>Fri, 22 Jul 2011 12:07:37 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Security]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/?p=137</guid>
+      <description><![CDATA[Android&#8217;s security situation is pretty dire. Considering how well Google architected Chrome, I know they understand how to create a secure system. Perhaps Google don&#8217;t care about security on Android? If a user needs to worry about downloading malware on Android Market, which has apps that leak or maliciously steal personal data, and others that send spam [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>Android&#8217;s security situation is pretty dire. Considering how well Google architected Chrome, I know they understand how to create a secure system. Perhaps Google don&#8217;t care about security on Android?</p>
+<p>If a user needs to worry about downloading malware on Android Market, which has apps that leak or maliciously steal personal data, and others that send spam SMS messages, among other nasty things, something has gone terribly wrong.</p>
+<p>Asking users to review a complex and obtuse permissions list is not even close to the answer. Time and time again, we&#8217;ve seen that this sort of thing can&#8217;t be left to the users by default. They will always click yes.</p>
+<p>Google has not learned this lesson, obviously, and as such, I expect the Android platform will turn into the Windows of old, where nearly every smartphone is jam-packed with Spy/Malware.</p>
+<p>Hopefully I&#8217;m wrong and Google will wake up.</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2011/07/22/android-is-insecure-by-design/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>phpBB3 and add user mod</title>
+      <link>http://www.greglincoln.com/2011/07/15/phpbb3-and-add-user-mod/</link>
+      <comments>http://www.greglincoln.com/2011/07/15/phpbb3-and-add-user-mod/#comments</comments>
+      <pubDate>Fri, 15 Jul 2011 13:23:46 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Admin Geekery]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/?p=132</guid>
+      <description><![CDATA[If you use the add user mod with phpBB3 with new user registration disabled you may find it is not sending passwords in the user welcome email. To fix this, you&#8217;ll need to edit the language template for the user welcome email to include the password token. You can find the tempate in language/en/emails. WIth [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>If you use the add user mod with phpBB3 with new user registration disabled you may find it is not sending passwords in the user welcome email. To fix this, you&#8217;ll need to edit the language template for the user welcome email to include the password token.</p>
+<p>You can find the tempate in language/en/emails. WIth user registration disabled, the one you want is user_welcome.txt. Use _inactive.txt or admin_welcome_inactive.txt as appropriate if you use those registration modes.</p>
+<p>All you need to do is add &#8220;Password: {PASSWORD}&#8221; somewhere (the token is the important bit) and you&#8217;ll be set. You might need to clear your board&#8217;s cache by clicking the &#8220;clear cache&#8221; button on the main admin window.</p>
+<p>I hope this helps you if you find yourself in the same puzzling predicament.</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2011/07/15/phpbb3-and-add-user-mod/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>iPad?</title>
+      <link>http://www.greglincoln.com/2010/04/04/ipad/</link>
+      <comments>http://www.greglincoln.com/2010/04/04/ipad/#comments</comments>
+      <pubDate>Sun, 04 Apr 2010 20:51:45 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Experiments]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2010/04/04/ipad/</guid>
+      <description><![CDATA[So far, this thing has not left my side. I can almost touch type with this keyboard. What I hadn&#8217;t expected was for it to replace my iPhone in my mind such that I am puzzled by the tiny screen when I use my iPhone. I think this means Iphones need a higher res screen.]]></description>
+      <content:encoded>
+        <![CDATA[<p>So far, this thing has not left my side. I can almost touch type with this keyboard. What I hadn&#8217;t expected was for it to replace my iPhone in my mind such that I am puzzled by the tiny screen when I use my iPhone.<br />
+I think this means Iphones need a higher res screen. </p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2010/04/04/ipad/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>My box can has shinies!</title>
+      <link>http://www.greglincoln.com/2009/11/23/my-box-can-has-shinies/</link>
+      <comments>http://www.greglincoln.com/2009/11/23/my-box-can-has-shinies/#comments</comments>
+      <pubDate>Mon, 23 Nov 2009 18:59:13 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Writing]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/?p=127</guid>
+      <description><![CDATA[Found on a forum: I think of my inner world like a child holding a box of their most precious treasures and when they show it to someone the person laughs and teases that that they aren&#8217;t treasures, they are worthless knickknacks and stones. What hurts isn&#8217;t being told that they are worthless, what hurts [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>Found on a forum:</p>
+<blockquote><p>I think of my inner world like a child holding a box of<br />
+their most precious treasures and when they show it to<br />
+someone the person laughs and teases that that they<br />
+aren&#8217;t treasures, they are worthless knickknacks and<br />
+stones. What hurts isn&#8217;t being told that they are<br />
+worthless, what hurts is that something so wonderful<br />
+could not be shared. What doesn&#8217;t do any good is locking<br />
+the box up and showing no one ever again. You have to<br />
+learn to show someone else and keep doing it until you<br />
+find someone who appreciates it just as you do.</p></blockquote>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2009/11/23/my-box-can-has-shinies/feed/</wfw:commentRss>
+      <slash:comments>1</slash:comments>
+    </item>
+    <item>
+      <title>Hackintosh success, Dell Inspiron 530, Mac OS 10.5.6</title>
+      <link>http://www.greglincoln.com/2009/01/22/hackintosh-success-dell-inspiron-530-mac-os-1056/</link>
+      <comments>http://www.greglincoln.com/2009/01/22/hackintosh-success-dell-inspiron-530-mac-os-1056/#comments</comments>
+      <pubDate>Fri, 23 Jan 2009 04:37:28 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Experiments]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2009/01/22/hackintosh-success-dell-inspiron-530-mac-os-1056/</guid>
+      <description>
+        <![CDATA[<p>Many folks have achieved this before me, so I'm not claiming to be some sort of amazing talent, but considering how non-obvious the process was, I'll put down some notes here for you to peruse at your leisure.</p>
+
+]]>
+      </description>
+      <content:encoded>
+        <![CDATA[<p>Today is a happy Mac day, for I have successfully installed Mac OS 10 on my Dell Desktop. Many folks have achieved this before me, so I&#8217;m not claiming to be some sort of amazing talent, but considering how non-obvious the process was, I&#8217;ll put down some notes here for you to peruse at your leisure.</p>
+<p><span id="more-114"></span></p>
+<p><strong>Last Updated on 5/10/2013.</strong></p>
+<p><strong>This is all essentially irrelevant these days, as the folks over at <a href="http://www.tonymacx86.com/" target="_blank">TonyMac</a> have made setting up a Hackintosh on mac-like hardware trivial. I&#8217;ll leave this post as is just in case any of it remains helpful, but I strongly advise anyone interested in building a Hackintosh ignore the long process below and follow the guides at <a href="http://www.tonymacx86.com/" target="_blank"><strong>TonyMac</strong></a>. I&#8217;ve built three Hackintoshes following the CustoMac buyer&#8217;s guide, and the process was relatively simple and problem free.</strong></p>
+<p>Being the sort who likes to do The Right Thing, I first attempted to use Boot-132 (following the guide <a href="http://forum.insanelymac.com/index.php?showtopic=113288">here</a>) to install from my retail Leopard disk. Alas, despite my trying valiantly, and losing a more than a bit of hair, I was not successful.</p>
+<p>I&#8217;m reasonably sure that my failing point was actually just a missing driver, and if I was so inclined I could probably install &#8220;vanilla&#8221; Leopard from the retail disk now, but as I have a working system by other means at this point, I&#8217;m not going to bother.</p>
+<p>This is what I *think* one must do to get this working with the retail boot disk:</p>
+<ol>
+<li>Download the boot CD image from the post linked <a href="http://forum.insanelymac.com/index.php?showtopic=113288">here</a>. (Download .ISO Original with project kexts link)</li>
+<li>Open the iso with some kind of iso editor. I used <a href="http://www.magiciso.com/">Magiciso</a> in Windows.</li>
+<li>Grab the initrd.dmg out and open it in the same editor (or on a Mac).</li>
+<li>Within, you will find a folder Extra\Extensions. In that folder you should put a &#8220;decrypter.&#8221; kext. The one I suggest is appledecrypt.kext. I don&#8217;t think I can legally provide this file. (sigh) Google will find it for you very quickly, though, so all is not lost.</li>
+<li>You&#8217;ll also need to put any drivers that are required to boot your Mac in that folder. I needed the Intel SATA drivers, for example. <a href="http://forum.insanelymac.com/">InsanelyMac&#8217;s</a> forums will provide links to any drivers you might need. Grab the drivers you need for booting only, you don&#8217;t need to go for 100%.</li>
+<li>Close the dmg and update the one in the boot iso with your changed version.</li>
+<li>Burn the iso to a cd.</li>
+</ol>
+<p>Now, all you need to do is boot from the &#8220;boot&#8221; cd, and when you see the darwin prompt, swap in your Leopard DVD and hit enter. Hopefully you&#8217;ll be able to boot and install. However, as I said earlier, I could not. I got an X on top of the Apple logo after many minutes of trundling. Instead, I took the semi-dark path of grabbing a pre-patched iso from a torrent site. Now as I own a &#8220;family&#8221; version of Leopard, I don&#8217;t feel bad about this. But I suppose it is technically illegal. Bleh.</p>
+<p>Anywho, the one I used is called &#8220;iATKOS 5i&#8221; which is based on 10.5.5. The nice thing about this particular variant is that it is designed to make an install that can in future be updated using the standard Software Update app, just like a Real Mac(TM).</p>
+<p>iATKOS has some fairly <a href="http://iatkos.wikidot.com/">decent docs</a> that I suggest you read before you start. Also, read the page on <a href="http://iatkos.wikidot.com/preparing-an-upgradable-system">preparing an updatable system.</a> The key items that I missed on my first (few) attempts are that you really do need to install &#8220;drivers&#8221; for your hardware. Even if similar models appear in Real Macs(TM). For example, I have an NVIDIA 8600 GT, and so does at least one Real Mac(TM) I can think of. However, I was silly and didn&#8217;t include the nvidia &#8220;drivers&#8221; and my machine hard locked after the spinny thing below the apple logo spun a bit.</p>
+<p>Drivers is in quotes because the ones I used aren&#8217;t really drivers. (most aren&#8217;t) They &#8220;inject&#8221; the necessary vendor and device IDs into the existing Apple drivers (not exactly as described, there&#8217;s magic here I&#8217;ve not looked into) so that they can support models that don&#8217;t have the approved Apple values.</p>
+<p>Now you might think that you can install these drivers after you&#8217;ve installed the OS itself. That might be true in some cases, but at least for me, my machine wouldn&#8217;t even boot without NVIDIA and Intel SATA drivers. So if you have similar hardware, be sure to select these. There isn&#8217;t too much harm in having drivers for hardware you don&#8217;t have (with a few exceptions, and the docs mention them), just like in Windows or Linux.</p>
+<p>But first, you&#8217;ll need to partition the drive and format a partition for Mac OS. You have two (well three, but one is pretty useless) options for the master partition table. If you want to keep Windows or Linux bootable, you&#8217;ll want to use MBR, but that has a caveat in that you won&#8217;t have success unless you mark the boot partition bootable (particularly if you are coming from Windows). Naturally you can&#8217;t set this flag with Disk Utility, at least any way I could find, so you&#8217;ll have to use something else. I suggest cfdisk from your friendly knoppix rescue disk. If you don&#8217;t have one, make one! They are highly handy, and terribly terrific.</p>
+<p>Now, I backed everything up before I started (you did too, right? <strong>Right?!?),</strong> so I just let Leopard have it&#8217;s way with my drive using the fancy GUID based table, with a single partition. The iATKOS wiki has a guide to set up dual/multi boot. I didn&#8217;t try it, so I have no idea if it works. But there it is.</p>
+<p>If you can&#8217;t figure out how to partition using Apple&#8217;s friendly disk utility, you probably shouldn&#8217;t be trying to set up a Hackintosh. Or maybe you are GUIphobic, in which case there is always the previously mentioned cfdisk.</p>
+<p>Once you&#8217;ve partitioned things, you&#8217;ll want to start the install proper. Click through (slowly!) until you see a customize button at the bottom left. You will <strong>need</strong> to make some tweaks here, so don&#8217;t miss it!</p>
+<p>For my Dell, I left all the defaults (it is important you do this if you want the the install upgradable via Software Update) and added:</p>
+<ul>
+<li>OHR, which fixes shutdown/restart issues</li>
+<li>Intel SATA (the non ACPI version, thanks to a tip in the InsaneMac forums)</li>
+<li>nvkush (I started with nvinject, but that left me without hardware acceleration. I switched to nvkush post install and all was well. You get to avoid my trial and error. Aren&#8217;t you special?)</li>
+<li>ntfs (for read/write ntfs support, if you want it)</li>
+</ul>
+<p>Now obviously you won&#8217;t want to follow my list if you have different hardware, but I think having the list will give you the right idea as to what things you should pick.</p>
+<p>At this point I was able to boot to a desktop. I ran Software Update and let it do its thing. It worked! Hooray! YMMV.</p>
+<p>My Dell&#8217;s built in NIC and built in audio were not supported by any of the drivers included, so I had to get them after. I&#8217;d researched this, though, and had the NIC drivers ready on a flash drive for convenience. If you have the 82566DC Intel NIC I have, you can grab the <a href="http://techresearchinfo.blogspot.com/">kext here</a>. Because I&#8217;m lazy, I also grabbed <a href="http://cheetha.net/">kext helper</a> to make the many kext installs I was sure to need easier. It is a great tool and I suggest you grab it.</p>
+<p><strong>Update (2/6/09): </strong>The kext that I mention above appears to have significant issues with bridged networking mode in VMWare Fusion 2.0. I was never able to get it to work and worse, switching from NAT to bridged and back a few times could reliably cause a kernel panic. To resolve this, I picked up the <a href="http://www.bestbuy.com/site/olspage.jsp?skuId=6228815&amp;type=product&amp;id=1069300197059">Netgear GA311</a> from Best Buy for $35. It has native support in Leopard, supports gigabit ethernet, and works perfectly with VMWare. I suggest you grab one and skip the community provided driver for the built in NIC.</p>
+<p>The audio was actually the trickiest. Success required a bit of dancing around. First, I nabbed a copy of AppleHDA patcher from <a href="http://forum.insanelymac.com/index.php?showtopic=32859">its forum post.</a> Using this tool requires a &#8220;codec dump&#8221; from Linux, and the post has a link to tons of them. They have vendor/model IDs in them, which will help you find your model, as the same &#8220;reported&#8221; model number (like ALC888, for example) actually has a handful of variants.</p>
+<p>Once you find the matching file, just drag it onto the patcher tool&#8217;s icon, it will trundle, and then suggest you reboot. I did, and had working sound. At that point, all my hardware was working. Everything is stable so far, too. I wrote this post in Ecto on my new Hackintosh.</p>
+<p>I hope this helps you on your quest to a cheaper or custom Mac. I don&#8217;t pretend to be an expert, but I will try to answer questions. Feel free to leave a comment. Also, please feel free to correct me if I did (and I&#8217;m sure I did) something less than ideal. Good luck, and remember that if you can&#8217;t get it to work in the end, there&#8217;s always Ubuntu!</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2009/01/22/hackintosh-success-dell-inspiron-530-mac-os-1056/feed/</wfw:commentRss>
+      <slash:comments>27</slash:comments>
+    </item>
+    <item>
+      <title>You must watch this right away.</title>
+      <link>http://www.greglincoln.com/2008/07/17/you-must-watch-this-right-away/</link>
+      <comments>http://www.greglincoln.com/2008/07/17/you-must-watch-this-right-away/#comments</comments>
+      <pubDate>Thu, 17 Jul 2008 23:22:34 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Uncategorized]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2008/07/17/you-must-watch-this-right-away-2/</guid>
+      <description><![CDATA[Really. Dr. Horrible&#8217;s Sing-Along Blog Awesome. Watch now. Thanks.]]></description>
+      <content:encoded>
+        <![CDATA[<p>Really. <a href="http://drhorrible.com/">Dr. Horrible&#8217;s Sing-Along Blog</a></p>
+<p>Awesome. Watch now. Thanks.</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2008/07/17/you-must-watch-this-right-away/feed/</wfw:commentRss>
+      <slash:comments>4</slash:comments>
+    </item>
+    <item>
+      <title>Reverse a dictionary</title>
+      <link>http://www.greglincoln.com/2008/06/23/reverse-a-dictionary/</link>
+      <comments>http://www.greglincoln.com/2008/06/23/reverse-a-dictionary/#comments</comments>
+      <pubDate>Mon, 23 Jun 2008 19:07:08 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Programming]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2008/06/23/reverse-a-dictionary/</guid>
+      <description><![CDATA[Have you ever wished your dictionary of &#60;K,V&#62; was in fact of &#60;V,K&#62;? I might be the last person to figure this out, but with LINQ (and a couple lambdas) you can do this with one magical line of code: var newDict = oldDict.ToDictionary&#40;l =&#62; l.Value, l =&#62; l.Key&#41;; Neat, eh?]]></description>
+      <content:encoded>
+        <![CDATA[<p>Have you ever wished your dictionary of &lt;K,V&gt; was in fact of &lt;V,K&gt;? I might be the last person to figure this out, but with LINQ (and a couple lambdas) you can do this with one magical line of code:</p>
+
+<div class="wp_syntax"><table><tr><td class="code"><pre class="csharp" style="font-family:monospace;"><span style="color: #0600FF; font-weight: bold;">var</span> newDict <span style="color: #008000;">=</span> oldDict<span style="color: #008000;">.</span><span style="color: #0000FF;">ToDictionary</span><span style="color: #008000;">&#40;</span>l <span style="color: #008000;">=&gt;</span> l<span style="color: #008000;">.</span><span style="color: #0600FF; font-weight: bold;">Value</span>, l <span style="color: #008000;">=&gt;</span> l<span style="color: #008000;">.</span><span style="color: #0000FF;">Key</span><span style="color: #008000;">&#41;</span><span style="color: #008000;">;</span></pre></td></tr></table></div>
+
+<p>Neat, eh?</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2008/06/23/reverse-a-dictionary/feed/</wfw:commentRss>
+      <slash:comments>1</slash:comments>
+    </item>
+    <item>
+      <title>I hate Subversion</title>
+      <link>http://www.greglincoln.com/2008/06/22/i-hate-subversion/</link>
+      <comments>http://www.greglincoln.com/2008/06/22/i-hate-subversion/#comments</comments>
+      <pubDate>Sun, 22 Jun 2008 21:33:41 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Uncategorized]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2008/06/22/i-hate-subversion/</guid>
+      <description><![CDATA[I really really hate it. Every time I try to do anything USEFUL with it, like try out an idea in a new branch and then merge the bits of that branch that worked out back to my main line, it barfs all over me with totally crap-ass error messages that nobody could ever, EVER [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>I really really hate it. Every time I try to do anything USEFUL with it, like try out an idea in a new branch and then merge the bits of that branch that worked out back to my main line, it barfs all over me with totally crap-ass error messages that nobody could ever, EVER understand.</p>
+<p>Also, despite their claims to the contrary in the documentation, svn will happily shit all over your working copy when a switch fails. So much for atomic operations.</p>
+<p>I&#8217;ve had it. I&#8217;m switching to Mercurial.</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2008/06/22/i-hate-subversion/feed/</wfw:commentRss>
+      <slash:comments>3</slash:comments>
+    </item>
+    <item>
+      <title>Become a Jedi with Resharper</title>
+      <link>http://www.greglincoln.com/2008/06/20/become-a-jedi-with-resharper/</link>
+      <comments>http://www.greglincoln.com/2008/06/20/become-a-jedi-with-resharper/#comments</comments>
+      <pubDate>Sat, 21 Jun 2008 01:14:33 +0000</pubDate>
+      <dc:creator>Greg</dc:creator>
+      <category><![CDATA[Programming]]></category>
+
+      <guid isPermaLink="false">http://www.greglincoln.com/2008/06/20/become-a-jedi-with-resharper/</guid>
+      <description><![CDATA[If you work in C# or VB.net on a regular basis, you really owe it to yourself to try out Resharper. This tool saves me countless hours. James Kovacs put together some fantastic screencasts on &#8220;Becoming a Jedi&#8221; that show it in action, if you are curious. He hasn&#8217;t covered the features that make it [...]]]></description>
+      <content:encoded>
+        <![CDATA[<p>If you work in C# or VB.net on a regular basis, you really owe it to yourself to try out Resharper. This tool saves me countless hours. </p>
+<p><a href="http://www.jameskovacs.com/">James Kovacs</a> put together some fantastic screencasts on &#8220;<a href="http://www.jameskovacs.com/blog/BecomingAJediPart3OfN.aspx">Becoming a Jedi</a>&#8221; that show it in action, if you are curious. </p>
+<p>He hasn&#8217;t covered the features that make it a boon for test driven development yet, but there&#8217;s another great <a href="http://www.jetbrains.com/resharper/documentation/presentation/codingSession/CodingSession.wmv">screencast</a> that shows that off, and <a href="http://resharper.blogspot.com/2007/05/jedi-way-coding-in-reverse.html">this post</a> provides some additional details on &#8220;coding in reverse&#8221; with Resharper.</p>
+]]>
+      </content:encoded>
+      <wfw:commentRss>http://www.greglincoln.com/2008/06/20/become-a-jedi-with-resharper/feed/</wfw:commentRss>
+      <slash:comments>0</slash:comments>
+    </item>
+  </channel>
+</rss>

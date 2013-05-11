@@ -1,9 +1,8 @@
-﻿using System;
 using System.Linq;
 using NUnit.Framework;
 using RssFeedySharp.Models;
 
-namespace RssFeedySharp.Tests
+namespace RssFeedySharp.Tests.Integration
 {
     [SetUpFixture]
     public class IntegrationTestsSetup

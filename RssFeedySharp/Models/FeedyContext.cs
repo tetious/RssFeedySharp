@@ -11,7 +11,12 @@ namespace RssFeedySharp.Models
         public DbSet<UserItem> UserItems { get; set; }
         public DbSet<UserAccount> UserAccounts { get; set; }
 
-        public FeedyContext(string databaseName = "FeedySharp")
+        // EF migrations generators requires a default constructor
+        public FeedyContext()
+            : base("FeedySharp")
+        {}
+
+        public FeedyContext(string databaseName)
             : base(databaseName)
         {}
 

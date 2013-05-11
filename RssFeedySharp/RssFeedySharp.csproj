@@ -44,6 +44,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -142,6 +143,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Lib\FeedFetcher.cs" />
     <Compile Include="Migrations\201304182356367_Initial.cs" />
     <Compile Include="Migrations\201304182356367_Initial.Designer.cs">
       <DependentUpon>201304182356367_Initial.cs</DependentUpon>
@@ -157,6 +159,10 @@
     <Compile Include="Migrations\201305090032314_FeedUserAndItemUser.cs" />
     <Compile Include="Migrations\201305090032314_FeedUserAndItemUser.Designer.cs">
       <DependentUpon>201305090032314_FeedUserAndItemUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201305110223173_RenameStuffInItem.cs" />
+    <Compile Include="Migrations\201305110223173_RenameStuffInItem.Designer.cs">
+      <DependentUpon>201305110223173_RenameStuffInItem.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Feed.cs" />
@@ -289,6 +295,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201305090032314_FeedUserAndItemUser.resx">
       <DependentUpon>201305090032314_FeedUserAndItemUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201305110223173_RenameStuffInItem.resx">
+      <DependentUpon>201305110223173_RenameStuffInItem.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
